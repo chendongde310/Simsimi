@@ -23,4 +23,13 @@ public class Request {
     public String getRespSentence(){
         return this.respSentence;
     }
+
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "status=" + status +
+                ", respSentence='" + respSentence + '\'' +
+                '}';
+    }
 }

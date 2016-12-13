@@ -2,6 +2,7 @@ package com.chendong.ai.simsimi;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,8 +12,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 /**
- *
  * 作者：chendongde310
  * Github:www.github.com/chendongde310
  * 日期：2016/12/13 - 16:31
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(sendText.getText()!=null){
+                if (sendText.getText() != null) {
                     gettext(sendText.getText().toString());
                 }
             }
@@ -51,11 +52,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void gettext(String text) {
-        service.getReqText(text,Math.random()).enqueue(new Callback<Request>() {
+        service.getReqText(text, Math.random()).enqueue(new Callback<Request>() {
             @Override
             public void onResponse(Call<Request> call, Response<Request> response) {
-                gettext.setText(response.body().getRespSentence());
-                sendText.setText("");
+                if (response.body() != null && 200 == response.body().getStatus()) {
+                    gettext.setText(response.body().getRespSentence());
+                    sendText.setText("");
+                }
+                Log.d("返回参数", response.body().toString());
             }
 
             @Override
