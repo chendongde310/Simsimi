@@ -1,15 +1,24 @@
 package com.chendong.ai.simsimi.ui;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chendong.ai.simsimi.MyService;
 import com.chendong.ai.simsimi.R;
@@ -33,8 +42,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private SimsimiService service;
     private SwipBaseAdapter adapter;
     private android.widget.ListView listview;
-    private List<MessageBean> list =new ArrayList<>();
+    private List<MessageBean> list = new ArrayList<>();
     private Context context;
+    private boolean forFlag = false;//自娱自乐开关
+    private boolean ftFlag = false;//低准确度开关
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +57,22 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         this.sendText = (EditText) findViewById(R.id.sendText);
         this.send = (TextView) findViewById(R.id.send);
         service = MyService.getInstance().getService();
-        send.setOnClickListener(this);
+
         adapter = new SwipBaseAdapter();
         listview.setAdapter(adapter);
+        setListener();
+    }
+
+    private void setListener() {
+        send.setOnClickListener(this);
+        listview.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideSoftInput();
+                return false;
+            }
+        });
+
     }
 
 
@@ -57,30 +81,47 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if (sendText != null) {
             getText(sendText.getText().toString());
         }
+    }
 
 
+    private void hideSoftInput() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(sendText.getWindowToken(), 0);
     }
 
 
     private void getText(final String text) {
         sendText.setText("");
-        addMessage(new MessageBean(text, MessageBean.WHO_ME, new Date()));
-        MyService.getInstance().getService().getReqText(text, Math.random()).enqueue(new Callback<Request>() {
-            @Override
-            public void onResponse(Call<Request> call, Response<Request> response) {
-                if (response.body() != null && 200 == response.body().getStatus()) {
+        final MessageBean myMessage = new MessageBean(text, MessageBean.WHO_ME, new Date());
+        addMessage(myMessage);
 
+        MyService.getInstance().getService().getReqText(text, getFT()).enqueue(new Callback<Request>() {
+            @Override
+            public void onResponse(Call<Request> call, final Response<Request> response) {
+                if (response.body() != null && 200 == response.body().getStatus()) {
                     addMessage(new MessageBean(response.body().getRespSentence(), MessageBean.WHO_SIM, new Date()));
+
+                    if (forFlag) {
+                        //开始自娱自乐。。
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                getText(response.body().getRespSentence());
+                            }
+                        }, 2000);
+                    }
                 } else {
-                    addMessage(new MessageBean("你在BB什么呀？~老子完全听不懂哟~", MessageBean.WHO_SIM, new Date()));
+                    addMessage(new MessageBean("你在BBb什么？？请说人话~", MessageBean.WHO_SIM, new Date()));
                 }
+
             }
 
             @Override
             public void onFailure(Call<Request> call, Throwable t) {
                 sendText.setText(text);
                 t.printStackTrace();
-                addMessage(new MessageBean("获取失败了哦~绝对不是老子的问题啦！", MessageBean.WHO_SIM, new Date()));
+                myMessage.setSucceed(false);
+                addMessage(new MessageBean("你发的消息失败啦！", MessageBean.WHO_SIM, new Date()));
             }
         });
     }
@@ -91,8 +132,43 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         listview.setSelection(list.size());
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.chat_menu, menu);
+        return true;
+    }
+
+    /**
+     * 准确度
+     * @return
+     */
+    private double getFT(){
+        if(ftFlag){
+            return 1;
+        }else {
+            return Math.random();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.empty) {  //清空面板
+            list.clear();
+            adapter.notifyDataSetChanged();
+        } else if (item.getItemId() == R.id.intelligence) {  //智障模式
+            ftFlag = !ftFlag;
+            Toast.makeText(context, "人工智障模式："+(ftFlag?"开":"关"), Toast.LENGTH_SHORT).show();
+        } else if (item.getItemId() == R.id.auto) {  //自动对话
+            forFlag = !forFlag;
+            Toast.makeText(context, "自动撕逼模式："+(forFlag?"开":"关"), Toast.LENGTH_SHORT).show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     class SwipBaseAdapter extends BaseAdapter {
+
+        String[] item = {"删除", "复制到输入框", "显示Toast"};
+
 
         @Override
         public int getCount() {
@@ -111,21 +187,62 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            MessageBean messageBean = getItem(position);
+            final MessageBean messageBean = getItem(position);
             View view = null;
+            TextView textView = new TextView(context);
             if (messageBean.getWho() == MessageBean.WHO_ME) {
                 view = View.inflate(context, R.layout.view_chat_me, null);
-                TextView textView = (TextView) view.findViewById(R.id.text_me);
+                textView = (TextView) view.findViewById(R.id.text_me);
+                ImageView imageView = (ImageView) view.findViewById(R.id.err_img);
                 textView.setText(messageBean.getMessage());
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        list.remove(messageBean);
+                        getText(messageBean.getMessage());
+                    }
+                });
+
+                if (!messageBean.isSucceed()) {
+                    imageView.setVisibility(View.VISIBLE);
+                } else {
+                    imageView.setVisibility(View.GONE);
+                }
+
             } else if (messageBean.getWho() == MessageBean.WHO_SIM) {
                 view = View.inflate(context, R.layout.view_chat_sim, null);
-                TextView textView = (TextView) view.findViewById(R.id.text_sim);
+                textView = (TextView) view.findViewById(R.id.text_sim);
                 textView.setText(messageBean.getMessage());
             }
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    new AlertDialog.Builder(context)
+                            .setItems(item, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which) {
+                                        case 0:
+                                            list.remove(messageBean);
+                                            notifyDataSetChanged();
+                                            break;
+                                        case 1:
+                                            sendText.setText(messageBean.getMessage());
+                                            break;
+                                        case 2:
+                                            Toast.makeText(context, messageBean.getMessage(), Toast.LENGTH_SHORT).show();
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                            }).show();
+                }
+            });
 
             return view;
         }
     }
-
 
 }

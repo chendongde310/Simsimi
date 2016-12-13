@@ -14,11 +14,22 @@ public class MessageBean {
     private String message;
     private int who;
     private Date time;
+    private boolean succeed; //是否发生成功
+
 
     public MessageBean(String message, int who, Date time) {
         this.message = message;
         this.who = who;
         this.time = time;
+        this.succeed =true;
+    }
+
+    public boolean isSucceed() {
+        return succeed;
+    }
+
+    public void setSucceed(boolean succeed) {
+        this.succeed = succeed;
     }
 
     public String getMessage() {
