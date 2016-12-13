@@ -1,4 +1,4 @@
-package com.chendong.ai.simsimi;
+package com.chendong.ai.simsimi.bean;
 
 /**
  * 作者：陈东  —  www.renwey.com

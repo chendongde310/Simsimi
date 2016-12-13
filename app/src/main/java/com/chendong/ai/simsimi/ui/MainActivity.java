@@ -1,17 +1,18 @@
-package com.chendong.ai.simsimi;
+package com.chendong.ai.simsimi.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.chendong.ai.simsimi.MyService;
+import com.chendong.ai.simsimi.R;
+import com.chendong.ai.simsimi.bean.Request;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * 作者：chendongde310
@@ -22,12 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class MainActivity extends AppCompatActivity {
 
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://www.simsimi.com")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
 
-    SimsimiService service = retrofit.create(SimsimiService.class);
     private android.widget.EditText sendText;
     private android.widget.TextView gettext;
     private android.widget.TextView button;
@@ -45,21 +41,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (sendText.getText() != null) {
-                    gettext(sendText.getText().toString());
+                    getText(sendText.getText().toString());
                 }
             }
         });
     }
 
-    private void gettext(String text) {
-        service.getReqText(text, Math.random()).enqueue(new Callback<Request>() {
+    private void getText(String text) {
+        MyService.getInstance().getService().getReqText(text, Math.random()).enqueue(new Callback<Request>() {
             @Override
             public void onResponse(Call<Request> call, Response<Request> response) {
                 if (response.body() != null && 200 == response.body().getStatus()) {
                     gettext.setText(response.body().getRespSentence());
                     sendText.setText("");
+                } else {
+                    gettext.setText("获取失败");
                 }
-                Log.d("返回参数", response.body().toString());
             }
 
             @Override
@@ -69,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
 
 
 }

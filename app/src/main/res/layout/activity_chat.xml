@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.chendong.ai.simsimi.ui.ChatActivity">
+
+
+    <RelativeLayout
+        android:background="#979797"
+        android:id="@+id/send_rl"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/send"
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/sendText"
+            android:background="@color/text_background"
+            android:gravity="center"
+            android:text="SEND" />
+
+        <EditText
+            android:id="@+id/sendText"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/gettext"
+            android:layout_toStartOf="@+id/send"
+            android:background="@color/text_background"
+            android:hint="请输入聊天内容"
+            android:paddingLeft="10dp"
+            android:layout_marginRight="1dp"
+            android:layout_toLeftOf="@+id/send" />
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/listview"
+        android:divider="@null"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/send_rl"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+</RelativeLayout>

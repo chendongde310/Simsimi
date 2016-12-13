@@ -1,4 +1,6 @@
-package com.chendong.ai.simsimi;
+package com.chendong.ai.simsimi.api;
+
+import com.chendong.ai.simsimi.bean.Request;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
