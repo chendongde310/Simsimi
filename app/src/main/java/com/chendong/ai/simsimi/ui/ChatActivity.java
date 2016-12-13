@@ -57,7 +57,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         this.sendText = (EditText) findViewById(R.id.sendText);
         this.send = (TextView) findViewById(R.id.send);
         service = MyService.getInstance().getService();
-
         adapter = new SwipBaseAdapter();
         listview.setAdapter(adapter);
         setListener();
@@ -83,7 +82,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
+    /**
+     * 隐藏软键盘
+     */
     private void hideSoftInput() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(sendText.getWindowToken(), 0);
@@ -144,7 +145,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      */
     private double getFT(){
         if(ftFlag){
-            return 1;
+            return 0.01;
         }else {
             return Math.random();
         }
