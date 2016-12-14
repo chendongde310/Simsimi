@@ -10,7 +10,8 @@
 * 自娱自乐
     机器人跟机器人对话会有什么有趣的发生呢！？（毁灭世界才不会的啦...吧？）
     
-    
+![demoImg](img1.jpg)     
+![demoImg](img2.jpg)  
     
 --------------------------------------------    
 ###  Not fuck license,Enjoy this cheap chicken!
