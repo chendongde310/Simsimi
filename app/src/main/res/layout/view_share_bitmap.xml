@@ -19,38 +19,29 @@
 
     <LinearLayout
         android:layout_below="@+id/share_img"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
+
         android:layout_width="match_parent"
         android:layout_height="80dp" >
 
 
         <ImageView
             android:layout_weight="1"
-            android:padding="10dp"
-            android:src="@drawable/share_qq"
+            android:padding="15dp"
+            android:src="@drawable/share_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/share_qq" />
+            android:id="@+id/share_bitmap" />
 
 
         <ImageView
-            android:id="@+id/share_weibo"
+            android:id="@+id/download_bitmap"
             android:layout_weight="1"
-            android:padding="10dp"
-            android:src="@drawable/share_weibo"
+            android:padding="15dp"
+            android:src="@drawable/download_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
 
-
-        <ImageView
-            android:id="@+id/share_weixin"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:src="@drawable/share_weixin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
 
 

@@ -304,10 +304,23 @@ public  class BitmapUtil {
         Bitmap bmp = Bitmap.createBitmap(view.getDrawingCache(), 0, statusBarHeights, widths, heights - statusBarHeights);
         // 销毁缓存信息
         view.destroyDrawingCache();
-        return  bmp;// compress(bmp,1000);
+         return  bmp;
+       // return compress(bmp,300);
     }
 
-    private void saveToSD(Bitmap bmp, String dirName,String fileName) throws IOException {
+
+    public static String getSDPath(){
+        File sdDir = null;
+        boolean sdCardExist = Environment.getExternalStorageState()
+                .equals(android.os.Environment.MEDIA_MOUNTED); //判断sd卡是否存在
+        if (sdCardExist)
+        {
+            sdDir = Environment.getExternalStorageDirectory();//获取跟目录
+        }
+        return sdDir.toString();
+    }
+
+    public static void saveToSD(Bitmap bmp, String dirName,String fileName) throws IOException {
         // 判断sd卡是否存在
         if (Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED)) {
@@ -321,6 +334,7 @@ public  class BitmapUtil {
             // 判断文件是否存在，不存在则创建
             if (!file.exists()) {
                 file.createNewFile();
+
             }
 
             FileOutputStream fos = null;
@@ -342,6 +356,8 @@ public  class BitmapUtil {
             }
         }
     }
+
+
 
     /**
      * 将Drawable转化为Bitmap

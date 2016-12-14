@@ -2,7 +2,9 @@ package com.chendong.ai.simsimi.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
@@ -29,7 +31,10 @@ import com.chendong.ai.simsimi.bean.MessageBean;
 import com.chendong.ai.simsimi.bean.Request;
 import com.chendong.ai.simsimi.utils.BitmapUtil;
 import com.orhanobut.hawk.Hawk;
+import com.orhanobut.logger.Logger;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,7 +56,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Context context;
     private boolean forFlag = false;//自娱自乐开关
     private boolean ftFlag = false;//黄暴开关
-
+    private static  final String shareUrl = BitmapUtil.getSDPath()+"/simsimi/cache";
+    private static  final String shareName = "share.png";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,10 +226,75 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         window.setContentView(R.layout.view_share_bitmap);
         ImageView ShareImage = (ImageView) window.findViewById(R.id.share_img);
         ShareImage.setImageBitmap(bitmap);
-        ImageView ShareQQ = (ImageView) window.findViewById(R.id.share_qq);
-        ImageView ShareWeibo = (ImageView) window.findViewById(R.id.share_weibo);
-        ImageView ShareWeixin = (ImageView) window.findViewById(R.id.share_weixin);
+        ImageView shareImg  = (ImageView) window.findViewById(R.id.share_bitmap );
+        ImageView downloadImg = (ImageView) window.findViewById(R.id.download_bitmap);
+        final Bitmap savebitmap = bitmap;
+        shareImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    BitmapUtil.saveToSD(savebitmap,shareUrl,shareName);
+                    shareMsg("发现一个有神经病的聊天机器人",null,shareUrl+shareName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        downloadImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    String fileUrl = BitmapUtil.getSDPath()+"/simsimi/";
+                    String fileName = "sim"+System.currentTimeMillis()+".png";
+                    BitmapUtil.saveToSD(savebitmap,fileUrl,"sim"+fileName);
+                    Toast.makeText(context, "保存成功,文件路径为："+fileUrl+fileName, Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+
+
     }
+
+    /**
+     * 分享功能
+     *
+
+     * @param msgTitle
+     *            消息标题
+     * @param msgText
+     *            消息内容
+     * @param imgPath
+     *            图片路径，不分享图片则传null
+     */
+    public void shareMsg(String msgTitle, String msgText,
+                         String imgPath) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        if (imgPath == null || imgPath.equals("")) {
+            intent.setType("text/plain"); // 纯文本
+        } else {
+            File f = new File(imgPath);
+            if (f != null && f.exists() && f.isFile()) {
+                Logger.d("设置分享文件为图片类型");
+                intent.setType("image/jpg");
+                Uri u = Uri.fromFile(f);
+                intent.putExtra(Intent.EXTRA_STREAM, u);
+            }
+        }
+        intent.putExtra(Intent.EXTRA_SUBJECT, msgTitle);
+        intent.putExtra(Intent.EXTRA_TEXT, msgText);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(Intent.createChooser(intent, getTitle()));
+    }
+
+
+
+
 
     class SwipBaseAdapter extends BaseAdapter {
 
