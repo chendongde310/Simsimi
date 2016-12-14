@@ -2,6 +2,8 @@
 
 >很黄很暴力的小黄鸡，用的是[simsimi官方接口](http://www.simsimi.com/storygame/main),大概写了个聊天界面，不知道能用多久...
 
+[点击我直接下载APK](http://ac-84mbdnm6.clouddn.com/9a8610f062f7d823c162.apk) 
+
 ##提供了三种模式，右上角切换
 * 普通模式
     这个没什么好说的...

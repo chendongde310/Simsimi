@@ -111,7 +111,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (sendText != null) {
+        if (sendText.getText() != null&&sendText.getText().length()>0) {
             getText(sendText.getText().toString());
         }
     }
