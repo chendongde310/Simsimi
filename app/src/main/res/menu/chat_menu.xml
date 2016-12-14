@@ -3,15 +3,15 @@
 
     <item
         android:id="@+id/empty"
-        android:title="清空消息面板" />
+        android:title="清空面板" />
 
     <item
         android:id="@+id/intelligence"
-        android:title="人工智障模式" />
+        android:title="黄暴模式" />
 
     <item
         android:id="@+id/auto"
-        android:title="自动撕逼模式" />
+        android:title="自娱自乐" />
 
 
 </menu>

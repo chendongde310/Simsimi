@@ -147,7 +147,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if(ftFlag){
             return 0.01;
         }else {
-            return Math.random();
+            return 1;
         }
     }
 
@@ -158,17 +158,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             adapter.notifyDataSetChanged();
         } else if (item.getItemId() == R.id.intelligence) {  //智障模式
             ftFlag = !ftFlag;
-            Toast.makeText(context, "人工智障模式："+(ftFlag?"开":"关"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "黄暴模式："+(ftFlag?"开":"关"), Toast.LENGTH_SHORT).show();
         } else if (item.getItemId() == R.id.auto) {  //自动对话
             forFlag = !forFlag;
-            Toast.makeText(context, "自动撕逼模式："+(forFlag?"开":"关"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "自娱自乐："+(forFlag?"开":"关"), Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
 
     class SwipBaseAdapter extends BaseAdapter {
 
-        String[] item = {"删除", "复制到输入框", "显示Toast"};
+        String[] item = {"删除此条", "再次发送", "复制内容"
+        };
 
 
         @Override
@@ -229,10 +230,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                             notifyDataSetChanged();
                                             break;
                                         case 1:
-                                            sendText.setText(messageBean.getMessage());
+                                            getText(messageBean.getMessage());
                                             break;
                                         case 2:
-                                            Toast.makeText(context, messageBean.getMessage(), Toast.LENGTH_SHORT).show();
+                                            sendText.setText(messageBean.getMessage());
+                                           // Toast.makeText(context, messageBean.getMessage(), Toast.LENGTH_SHORT).show();
                                             break;
                                         default:
                                             break;
