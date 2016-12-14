@@ -112,7 +112,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         }, 2000);
                     }
                 } else {
-                    addMessage(new MessageBean("你在BBb什么？？请说人话~", MessageBean.WHO_SIM, new Date()));
+                    addMessage(new MessageBean("???", MessageBean.WHO_SIM, new Date()));
                 }
 
             }
@@ -122,7 +122,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 sendText.setText(text);
                 t.printStackTrace();
                 myMessage.setSucceed(false);
-                addMessage(new MessageBean("你发的消息失败啦！", MessageBean.WHO_SIM, new Date()));
+                addMessage(new MessageBean("你发的消息失败啦！点击小红色点重新发送", MessageBean.WHO_SIM, new Date()));
             }
         });
     }
@@ -130,7 +130,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void addMessage(MessageBean messageBean) {
         list.add(messageBean);
         adapter.notifyDataSetChanged();
-        listview.setSelection(list.size());
+        listview.setSelection(adapter.getCount()-1);
     }
 
     @Override
@@ -140,7 +140,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * 准确度
+     * 黄暴程度  数值越小越不过滤 bad word
      * @return
      */
     private double getFT(){
