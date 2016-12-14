@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+
+    <item
+        android:icon="@drawable/share"
+        app:showAsAction="always"
+        android:id="@+id/share"
+        android:title="截图分享" />
+
 
     <item
         android:id="@+id/empty"
-        android:title="清空面板" />
+        android:title="清空对话" />
 
     <item
         android:id="@+id/intelligence"

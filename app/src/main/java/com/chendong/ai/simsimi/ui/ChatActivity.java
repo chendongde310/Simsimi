@@ -2,6 +2,7 @@ package com.chendong.ai.simsimi.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -25,6 +27,8 @@ import com.chendong.ai.simsimi.R;
 import com.chendong.ai.simsimi.api.SimsimiService;
 import com.chendong.ai.simsimi.bean.MessageBean;
 import com.chendong.ai.simsimi.bean.Request;
+import com.chendong.ai.simsimi.utils.BitmapUtil;
+import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +40,7 @@ import retrofit2.Response;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final String SAVE_KEY = "ChatRecord";
     private android.widget.TextView send;
     private android.widget.EditText sendText;
     private android.widget.RelativeLayout sendrl;
@@ -45,7 +50,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private List<MessageBean> list = new ArrayList<>();
     private Context context;
     private boolean forFlag = false;//自娱自乐开关
-    private boolean ftFlag = false;//低准确度开关
+    private boolean ftFlag = false;//黄暴开关
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +62,32 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         this.sendText = (EditText) findViewById(R.id.sendText);
         this.send = (TextView) findViewById(R.id.send);
         service = MyService.getInstance().getService();
+        getChatRecord();
         adapter = new SwipBaseAdapter();
         listview.setAdapter(adapter);
+        listview.setSelection(adapter.getCount() - 1);
         setListener();
+    }
+
+    /**
+     * 读取消息记录
+     */
+    private void getChatRecord() {
+        list.addAll(Hawk.get(SAVE_KEY,new ArrayList<MessageBean>()));
+    }
+
+
+    /**
+     * 储存消息记录
+     */
+    private void saveChatRecord() {
+        Hawk.put(SAVE_KEY, list);
+    }
+
+    private void dataSetChanged() {
+        adapter.notifyDataSetChanged();
+        //储存消息记录
+        saveChatRecord();
     }
 
     private void setListener() {
@@ -129,9 +157,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addMessage(MessageBean messageBean) {
         list.add(messageBean);
-        adapter.notifyDataSetChanged();
-        listview.setSelection(adapter.getCount()-1);
+        dataSetChanged();
+        listview.setSelection(adapter.getCount() - 1);
+
     }
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -141,12 +174,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 黄暴程度  数值越小越不过滤 bad word
+     *
      * @return
      */
-    private double getFT(){
-        if(ftFlag){
+    private double getFT() {
+        if (ftFlag) {
             return 0.01;
-        }else {
+        } else {
             return 1;
         }
     }
@@ -155,15 +189,40 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.empty) {  //清空面板
             list.clear();
-            adapter.notifyDataSetChanged();
+            dataSetChanged();
         } else if (item.getItemId() == R.id.intelligence) {  //智障模式
             ftFlag = !ftFlag;
-            Toast.makeText(context, "黄暴模式："+(ftFlag?"开":"关"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "黄暴模式：" + (ftFlag ? "开" : "关"), Toast.LENGTH_SHORT).show();
         } else if (item.getItemId() == R.id.auto) {  //自动对话
             forFlag = !forFlag;
-            Toast.makeText(context, "自娱自乐："+(forFlag?"开":"关"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "自娱自乐：" + (forFlag ? "开" : "关"), Toast.LENGTH_SHORT).show();
+        }else if (item.getItemId() == R.id.share) {  //截图分享
+
+            shareImg();
+
+
+
+
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 分享图片
+     *
+     */
+    private void shareImg() {
+        Bitmap bitmap = BitmapUtil.shotWindowToBitmap(this);
+        AlertDialog  alertDialog =   new  AlertDialog.Builder(this).setView(R.layout.view_share_bitmap).create();
+        alertDialog .show();
+        Window window = alertDialog.getWindow();
+        window.setContentView(R.layout.view_share_bitmap);
+        ImageView ShareImage = (ImageView) window.findViewById(R.id.share_img);
+        ShareImage.setImageBitmap(bitmap);
+        ImageView ShareQQ = (ImageView) window.findViewById(R.id.share_qq);
+        ImageView ShareWeibo = (ImageView) window.findViewById(R.id.share_weibo);
+        ImageView ShareWeixin = (ImageView) window.findViewById(R.id.share_weixin);
     }
 
     class SwipBaseAdapter extends BaseAdapter {
@@ -234,7 +293,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                             break;
                                         case 2:
                                             sendText.setText(messageBean.getMessage());
-                                           // Toast.makeText(context, messageBean.getMessage(), Toast.LENGTH_SHORT).show();
+                                            // Toast.makeText(context, messageBean.getMessage(), Toast.LENGTH_SHORT).show();
                                             break;
                                         default:
                                             break;
