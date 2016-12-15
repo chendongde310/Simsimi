@@ -8,6 +8,7 @@
 
 
     <RelativeLayout
+        android:elevation="3dp"
         android:background="#979797"
         android:id="@+id/send_rl"
         android:layout_alignParentBottom="true"
